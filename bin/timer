@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+function usage {
+  cat << DONE >&2
+
+Usage: "$(basename "$0")" duration
+
+duration is the provided unaltered to GNU 'date -d'.
+
+Requires GNU date.
+DONE
+}
+
+if (( $# == 0 )); then
+  echo "Timer duration not specified!" >&2
+  usage
+  exit 1
+fi
+
+declare -ir end="$(gdate -d "$*" +%s)"
+declare -i now="$(gdate +%s)"
+
+declare -r up_one_line="$(tput cuu 1)"
+declare -r clear_to_eol="$(tput el)"
+
+# add a newline to replace later
+echo
+
+while (( now < end )); do
+  echo -e "\e${up_one_line}${clear_to_eol}\rStarting in "$(printf '%(%M:%S)T' $(( end - now )))""
+  sleep 1
+  now="$(gdate +%s)"
+done
+
+echo -e "\e${up_one_line}${clear_to_eol}\rTime to start!"
+say "Time to start"
