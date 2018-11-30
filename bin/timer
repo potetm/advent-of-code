@@ -7,7 +7,7 @@ function usage {
 
 Usage: "$(basename "$0")" duration
 
-duration is the provided unaltered to GNU 'date -d'.
+duration is provided unaltered to GNU 'date -d'.
 
 Requires GNU date.
 DONE
