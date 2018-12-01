@@ -54,7 +54,7 @@
 
 (defn part-2-fast [instrs]
   (let [c (count instrs)
-        instrs (to-array instrs)]
+        instrs (long-array instrs)]
     (loop [current-idx 0
            step 1]
       (let [jmp-cnt (aget instrs current-idx)
