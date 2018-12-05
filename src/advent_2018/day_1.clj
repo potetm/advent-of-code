@@ -41,7 +41,7 @@
         acc
         (recur (next instrs)
                (conj seen acc)
-               (+ acc (first instrs)))))))
+               (+ acc ^long (first instrs)))))))
 
 ;; recursion < reduction < sequence operations (map/filter et al)
 
@@ -66,10 +66,10 @@
           (reductions + (cycle d))))
 
 (defn part-2-seq []
-  (first (duplicates (reductions + (cycle d)))))
+  (first (common/duplicates (reductions + (cycle d)))))
 
 (defn part-2-xform []
   (first (sequence (comp (xforms/reductions + 0)
-                         (duplicates)
+                         (common/duplicates)
                          (take 1))
                    (cycle d))))
