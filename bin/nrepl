@@ -4,4 +4,4 @@ set -euo pipefail
 
 cd "$(dirname "$0")"/..
 
-clj -A:dev bin/nrepl.clj
+clj -A:dev -J-Xmx5g -J-Xms5g bin/nrepl.clj

@@ -3,3 +3,4 @@
 .cpcache
 .nrepl-port
 src/scratchpad.clj
+src/advent_2018/scratchpad
