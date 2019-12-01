@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "$(dirname "$0")"/..
+
+clj \
+  -A:dev \
+  -J-Xmx5g \
+  -J-Xms5g \
+  -J-Dclojure.server.repl="{:port 1987 :accept clojure.core.server/repl}" \
+  --repl
