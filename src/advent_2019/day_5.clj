@@ -26,46 +26,53 @@
                            (arg-modes op)
                            args)]
     (case (mod op 100)
-
+      ;; add
       1 [(+ p 4) (assoc prog
                    a3 (+ a1' a2'))]
 
+      ;; multiply
       2 [(+ p 4) (assoc prog
                    a3 (* a1' a2'))]
 
+      ;;input
       3 (let [v (do (print "[input]=> ")
                     (flush)
                     (Long/parseLong (read-line)))]
           [(+ p 2) (assoc prog
                      a1 v)])
 
+      ;; output
       4 (do (println a1')
             (flush)
             [(+ p 2) prog])
 
+      ;; jump-if-true
       5 (if (not (zero? a1'))
           [a2' prog]
           [(+ p 3) prog])
 
+      ;; jump-if-false
       6 (if (zero? a1')
           [a2' prog]
           [(+ p 3) prog])
 
+      ;; less than
       7 [(+ p 4) (assoc prog
                    a3 (if (< a1' a2')
                         1
                         0))]
 
+      ;; equals
       8 [(+ p 4) (assoc prog
                    a3 (if (= a1' a2')
                         1
                         0))]
 
-      99 ::done!)))
+      99 ::halt!)))
 
 (defn run [prog]
   (into []
-        (take-while #(not= % ::done!))
+        (take-while #(not= % ::halt!))
         (iterate step
                  [0 prog])))
 (defn part-1 [in]
