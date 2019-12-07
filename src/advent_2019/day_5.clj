@@ -12,12 +12,12 @@
                    (mod i 10))
              (long (/ i 10))))))
 
-(defn step [[p prog]]
-  (let [op (get prog p)
+(defn step [{:keys [in out pnt prog] :as s}]
+  (let [op (get prog pnt)
         [a1 a2 a3 :as args] (subvec prog
-                                    (inc p)
+                                    (inc pnt)
                                     ;; the most instr args is 3
-                                    (min (+ p 4)
+                                    (min (+ pnt 4)
                                          (count prog)))
         [a1' a2' a3'] (map (fn [mode arg]
                              (if (zero? mode)
@@ -27,57 +27,104 @@
                            args)]
     (case (mod op 100)
       ;; add
-      1 [(+ p 4) (assoc prog
-                   a3 (+ a1' a2'))]
+      1 (assoc s
+          :pnt (+ pnt 4)
+          :prog (assoc prog
+                  a3 (+ a1' a2')))
 
       ;; multiply
-      2 [(+ p 4) (assoc prog
-                   a3 (* a1' a2'))]
+      2 (assoc s
+          :pnt (+ pnt 4)
+          :prog (assoc prog
+                  a3 (* a1' a2')))
 
       ;;input
-      3 (let [v (do (print "[input]=> ")
-                    (flush)
-                    (Long/parseLong (read-line)))]
-          [(+ p 2) (assoc prog
-                     a1 v)])
+      3 (if (empty? in)
+          (assoc s
+            :state :suspended)
+          (assoc s
+            :in (rest in)
+            :pnt (+ pnt 2)
+            :prog (assoc prog
+                    a1 (first in))))
 
       ;; output
-      4 (do (println a1')
-            (flush)
-            [(+ p 2) prog])
+      4 (assoc s
+          :out (conj out a1')
+          :pnt (+ pnt 2)
+          :prog prog)
 
       ;; jump-if-true
-      5 (if (not (zero? a1'))
-          [a2' prog]
-          [(+ p 3) prog])
+      5 (assoc s
+          :pnt (if (not (zero? a1'))
+                 a2'
+                 (+ pnt 3)))
 
       ;; jump-if-false
-      6 (if (zero? a1')
-          [a2' prog]
-          [(+ p 3) prog])
+      6 (assoc s
+          :pnt (if (zero? a1')
+                 a2'
+                 (+ pnt 3)))
 
       ;; less than
-      7 [(+ p 4) (assoc prog
-                   a3 (if (< a1' a2')
-                        1
-                        0))]
+      7 (assoc s
+          :pnt (+ pnt 4)
+          :prog (assoc prog
+                  a3 (if (< a1' a2')
+                       1
+                       0)))
 
       ;; equals
-      8 [(+ p 4) (assoc prog
-                   a3 (if (= a1' a2')
-                        1
-                        0))]
+      8 (assoc s
+          :pnt (+ pnt 4)
+          :prog (assoc prog
+                  a3 (if (= a1' a2')
+                       1
+                       0)))
 
-      99 ::halt!)))
+      99 (assoc s
+           :state :halted))))
 
-(defn run [prog]
-  (into []
-        (take-while #(not= % ::halt!))
-        (iterate step
-                 [0 prog])))
+(defn run
+  ([prog inputs]
+   (run {:state :running
+         :pnt 0
+         :prog prog
+         :in inputs
+         :out []}))
+  ([state]
+   (transduce (halt-when #(not= (:state %)
+                                :running)
+                         conj)
+              conj
+              []
+              (iterate step
+                       state))))
+
+(defn last-state
+  ([prog inputs]
+   (last-state {:state :running
+                :pnt 0
+                :prog prog
+                :in inputs
+                :out []}))
+  ([state]
+   (first (filter #(not= (:state %)
+                         :running)
+                  (iterate step
+                           state)))))
+
+(defn final-output [prog inputs]
+  (peek (:out (last-state prog
+                          inputs))))
+
 (defn part-1 [in]
-  (run (parse in))
-  nil)
+  (final-output (parse in)
+                [1]))
+
+(defn part-2 [in]
+  (final-output (parse in)
+                [5]))
 
 (comment
   (part-1 "1002,4,3,4,33")

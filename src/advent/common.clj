@@ -1,4 +1,4 @@
-(ns common)
+(ns advent.common)
 
 (defn duplicates
   ([]
@@ -24,5 +24,5 @@
                                              (assoc seen f :emitted)))
                          :emitted (recur (rest s) seen)
                          (recur (rest s) (assoc seen f :seen)))))
-                    xs seen)))]
+                   xs seen)))]
      (step coll {}))))
