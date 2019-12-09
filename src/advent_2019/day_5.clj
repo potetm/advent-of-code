@@ -12,31 +12,46 @@
                    (mod i 10))
              (long (/ i 10))))))
 
-(defn step [{:keys [in out pnt prog] :as s}]
-  (let [op (get prog pnt)
-        [a1 a2 a3 :as args] (subvec prog
-                                    (inc pnt)
-                                    ;; the most instr args is 3
-                                    (min (+ pnt 4)
-                                         (count prog)))
+(defn step [{:keys [in
+                    out
+                    pnt
+                    prog
+                    rel-base] :as s}]
+  (let [get #(get %1 %2 0)
+        op (get prog pnt)
+        args (map (fn [i]
+                    (get prog i))
+                  (range (inc pnt)
+                         ;; the most instr args is 3
+                         (+ pnt 4)))
+        ams (arg-modes op)
         [a1' a2' a3'] (map (fn [mode arg]
-                             (if (zero? mode)
-                               (get prog arg)
-                               arg))
-                           (arg-modes op)
+                             (case mode
+                               0 (get prog arg)
+                               1 arg
+                               2 (get prog
+                                      (+ rel-base arg))))
+                           ams
+                           args)
+        ;; out (i.e. write-index) modes
+        [a1o a2o a3o] (map (fn [mode arg]
+                             (case mode
+                               (0 1) arg
+                               2 (+ rel-base arg)))
+                           ams
                            args)]
     (case (mod op 100)
       ;; add
       1 (assoc s
           :pnt (+ pnt 4)
           :prog (assoc prog
-                  a3 (+ a1' a2')))
+                  a3o (+ a1' a2')))
 
       ;; multiply
       2 (assoc s
           :pnt (+ pnt 4)
           :prog (assoc prog
-                  a3 (* a1' a2')))
+                  a3o (* a1' a2')))
 
       ;;input
       3 (if (empty? in)
@@ -46,7 +61,7 @@
             :in (rest in)
             :pnt (+ pnt 2)
             :prog (assoc prog
-                    a1 (first in))))
+                    a1o (first in))))
 
       ;; output
       4 (assoc s
@@ -70,17 +85,22 @@
       7 (assoc s
           :pnt (+ pnt 4)
           :prog (assoc prog
-                  a3 (if (< a1' a2')
-                       1
-                       0)))
+                  a3o (if (< a1' a2')
+                        1
+                        0)))
 
       ;; equals
       8 (assoc s
           :pnt (+ pnt 4)
           :prog (assoc prog
-                  a3 (if (= a1' a2')
-                       1
-                       0)))
+                  a3o (if (= a1' a2')
+                        1
+                        0)))
+
+      ;; relative base offset
+      9 (assoc s
+          :pnt (+ pnt 2)
+          :rel-base (+ rel-base a1'))
 
       99 (assoc s
            :state :halted))))
@@ -105,6 +125,7 @@
   ([prog inputs]
    (last-state {:state :running
                 :pnt 0
+                :rel-base 0
                 :prog prog
                 :in inputs
                 :out []}))
