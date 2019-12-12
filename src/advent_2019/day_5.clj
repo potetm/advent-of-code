@@ -25,14 +25,14 @@
                          ;; the most instr args is 3
                          (+ pnt 4)))
         ams (arg-modes op)
-        [a1' a2' a3'] (map (fn [mode arg]
-                             (case mode
-                               0 (get prog arg)
-                               1 arg
-                               2 (get prog
-                                      (+ rel-base arg))))
-                           ams
-                           args)
+        [a1 a2 a3'] (map (fn [mode arg]
+                           (case mode
+                             0 (get prog arg)
+                             1 arg
+                             2 (get prog
+                                    (+ rel-base arg))))
+                         ams
+                         args)
         ;; out (i.e. write-index) modes
         [a1o a2o a3o] (map (fn [mode arg]
                              (case mode
@@ -45,13 +45,13 @@
       1 (assoc s
           :pnt (+ pnt 4)
           :prog (assoc prog
-                  a3o (+ a1' a2')))
+                  a3o (+ a1 a2)))
 
       ;; multiply
       2 (assoc s
           :pnt (+ pnt 4)
           :prog (assoc prog
-                  a3o (* a1' a2')))
+                  a3o (* a1 a2)))
 
       ;;input
       3 (if (empty? in)
@@ -65,27 +65,27 @@
 
       ;; output
       4 (assoc s
-          :out (conj out a1')
+          :out (conj out a1)
           :pnt (+ pnt 2)
           :prog prog)
 
       ;; jump-if-true
       5 (assoc s
-          :pnt (if (not (zero? a1'))
-                 a2'
+          :pnt (if (not (zero? a1))
+                 a2
                  (+ pnt 3)))
 
       ;; jump-if-false
       6 (assoc s
-          :pnt (if (zero? a1')
-                 a2'
+          :pnt (if (zero? a1)
+                 a2
                  (+ pnt 3)))
 
       ;; less than
       7 (assoc s
           :pnt (+ pnt 4)
           :prog (assoc prog
-                  a3o (if (< a1' a2')
+                  a3o (if (< a1 a2)
                         1
                         0)))
 
@@ -93,14 +93,14 @@
       8 (assoc s
           :pnt (+ pnt 4)
           :prog (assoc prog
-                  a3o (if (= a1' a2')
+                  a3o (if (= a1 a2)
                         1
                         0)))
 
       ;; relative base offset
       9 (assoc s
           :pnt (+ pnt 2)
-          :rel-base (+ rel-base a1'))
+          :rel-base (+ rel-base a1))
 
       99 (assoc s
            :state :halted))))
