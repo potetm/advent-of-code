@@ -77,7 +77,8 @@
 
 (defn station [ast]
   (let [blocked? (fn [p1 p2]
-                   (boolean (seq (set/intersection (points-between p1 p2) ast))))]
+                   (boolean (seq (set/intersection (points-between p1 p2)
+                                                   ast))))]
     (apply max-key
            (fn [a]
              (count (remove (fn [a']
