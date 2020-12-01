@@ -4,3 +4,5 @@
 .nrepl-port
 src/scratchpad.clj
 src/advent_2018/scratchpad
+aoc_2020/inputs
+aoc_2020/target
