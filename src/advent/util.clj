@@ -35,6 +35,13 @@
   (reduce * 1 coll))
 
 
+(defn transpose [coll]
+  (when (seq coll)
+    (apply mapv
+           vector
+           coll)))
+
+
 (defn assoc-str [^String s idx v]
   (.toString (doto (StringBuilder. s)
                (.setCharAt idx v))))
