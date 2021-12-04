@@ -10,7 +10,6 @@
     {:drawn (map #(Long/parseLong %)
                  (str/split drawn #","))
      :called []
-     :called-set #{}
      :winners []
      :boards (into []
                    (comp (remove #(nil? (first %)))
@@ -23,54 +22,47 @@
                                  boards))}))
 
 
-(defn winner? [called-set b]
-  (let [win? (fn [s]
-               (some (partial every? called-set)
-                     s))]
-    (boolean (or (win? b)
-                 (win? (util/transpose b))))))
-
-
 (defn step [{[d & r] :drawn
              ws :winners
              c :called
-             cs :called-set
              bs :boards}]
   (let [c' (conj c d)
-        cs' (conj cs d)
+        cs (set c')
+        win? (fn [b]
+               (boolean (or (some (partial every? cs)
+                                  b)
+                            (some (partial every? cs)
+                                  (util/transpose b)))))
         {w true
-         l false} (group-by (partial winner? cs')
+         l false} (group-by win?
                             bs)]
     {:drawn r
      :called c'
-     :called-set cs'
      :winners (into ws w)
      :boards l}))
 
 
-(defn score [called called-set b]
+(defn score [called b]
   (* (peek called)
      (util/sum (sequence (comp cat
-                               (remove called-set))
+                               (remove (set called)))
                          b))))
 
 (defn part-1 [dat]
   (some (fn [{c :called
-              cs :called-set
               [w] :winners}]
           (when w
-            (score c cs w)))
+            (score c w)))
         (iterate step
                  dat)))
 
 
 (defn part-2 [dat]
   (some (fn [{c :called
-              cs :called-set
               ws :winners
               bs :boards}]
           (when (empty? bs)
-            (score c cs (peek ws))))
+            (score c (peek ws))))
         (iterate step
                  dat)))
 
