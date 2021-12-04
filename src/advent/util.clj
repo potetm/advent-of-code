@@ -1,7 +1,8 @@
 (ns advent.util
   (:refer-clojure :exclude [min max])
   (:require
-    [clojure.core :as cc]))
+    [clojure.core :as cc]
+    [clojure.string :as str]))
 
 (defn min [coll]
   (when (seq coll)
@@ -40,6 +41,12 @@
     (apply mapv
            vector
            coll)))
+
+
+(defn trim-to-nil [s]
+  (let [s' (str/trim s)]
+    (when-not (= s' "")
+      s')))
 
 
 (defn assoc-str [^String s idx v]
