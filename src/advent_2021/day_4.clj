@@ -1,7 +1,6 @@
 (ns advent-2021.day-4
   (:require
     [advent.util :as util]
-    [clojure.core.matrix :as matrix]
     [clojure.string :as str]))
 
 
@@ -11,76 +10,67 @@
     {:drawn (map #(Long/parseLong %)
                  (str/split drawn #","))
      :called []
+     :called-set #{}
      :winners []
      :boards (into []
                    (comp (remove #(nil? (first %)))
                          (map (fn [ls]
-                                (let [[f :as b] (mapv (fn [l]
-                                                        (mapv #(Long/parseLong %)
-                                                              (str/split l #"\s+")))
-                                                      ls)]
-                                  {:state (vec (repeat (count ls)
-                                                       (vec (repeat (count f)
-                                                                    nil))))
-                                   :board b}))))
+                                (mapv (fn [l]
+                                        (mapv #(Long/parseLong %)
+                                              (str/split l #"\s+")))
+                                      ls))))
                    (partition-by nil?
                                  boards))}))
 
 
-(defn winner? [{s :state}]
+(defn winner? [called-set b]
   (let [win? (fn [s]
-               (some #(every? #{:hit!} %)
+               (some (partial every? called-set)
                      s))]
-    (boolean (or (win? s)
-                 (win? (util/transpose s))))))
+    (boolean (or (win? b)
+                 (win? (util/transpose b))))))
 
 
 (defn step [{[d & r] :drawn
              ws :winners
              c :called
+             cs :called-set
              bs :boards}]
-  (let [{w true
-         l false} (group-by winner?
-                            (map (fn [{s :state
-                                       b :board :as bd}]
-                                   (assoc bd
-                                     :state (reduce (fn [s idx]
-                                                      (if (= d (get-in b idx))
-                                                        (assoc-in s idx :hit!)
-                                                        s))
-                                                    s
-                                                    (matrix/index-seq b))))
-                                 bs))]
+  (let [c' (conj c d)
+        cs' (conj cs d)
+        {w true
+         l false} (group-by (partial winner? cs')
+                            bs)]
     {:drawn r
-     :called (conj c d)
+     :called c'
+     :called-set cs'
      :winners (into ws w)
      :boards l}))
 
 
-(defn score [called {s :state
-                     b :board}]
+(defn score [called called-set b]
   (* (peek called)
-     (util/sum (keep (fn [idx]
-                       (when (nil? (get-in s idx))
-                         (get-in b idx)))
-                     (matrix/index-seq b)))))
-
+     (util/sum (sequence (comp cat
+                               (remove called-set))
+                         b))))
 
 (defn part-1 [dat]
   (some (fn [{c :called
+              cs :called-set
               [w] :winners}]
           (when w
-            (score c w)))
+            (score c cs w)))
         (iterate step
                  dat)))
 
 
 (defn part-2 [dat]
   (some (fn [{c :called
+              cs :called-set
               ws :winners
               bs :boards}]
           (when (empty? bs)
-            (score c (peek ws))))
+            (score c cs (peek ws))))
         (iterate step
                  dat)))
 
