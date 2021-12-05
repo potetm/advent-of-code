@@ -1,5 +1,5 @@
 (ns advent-2018.day-2
-  (:require [advent.common :as common]
+  (:require [advent.util :as common]
             [clojure.string :as str]
             [clojure.core.matrix :as matrix]))
 

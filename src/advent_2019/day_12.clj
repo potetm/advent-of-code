@@ -1,5 +1,5 @@
 (ns advent-2019.day-12
-  (:require [advent.common :as common]))
+  (:require [advent.util :as common]))
 
 (defn parse [s]
   (map (fn [[_ & args]]

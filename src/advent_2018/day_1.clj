@@ -1,5 +1,5 @@
 (ns advent-2018.day-1
-  (:require [advent.common :as common]
+  (:require [advent.util :as common]
             [clojure.string :as str]
             [net.cgrand.xforms :as xforms])
   (:import (java.util HashSet)))
