@@ -10,10 +10,17 @@
             coll)))
 
 
-(defn max [coll]
-  (when (seq coll)
-    (reduce cc/max
-            coll)))
+(defn max
+  ([coll]
+   (when (seq coll)
+     (reduce cc/max
+             coll)))
+  ([xf coll]
+   (when (seq coll)
+     (transduce xf
+                (completing cc/max)
+                Double/NEGATIVE_INFINITY
+                coll))))
 
 
 (defn min-by [k coll]

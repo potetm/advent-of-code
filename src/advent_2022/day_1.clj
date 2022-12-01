@@ -14,8 +14,8 @@
 
 
 (defn part-1 [in]
-  (util/max (map util/sum
-                 in)))
+  (util/max (map util/sum)
+            in))
 
 
 (defn part-2 [in]
