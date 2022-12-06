@@ -78,4 +78,13 @@
   (part-1 (parse in))
   (step (step (parse t)))
 
+
+  (require '[clj-java-decompiler.core :as dc])
+
+  (dc/decompile (defn step [{s :state
+                             [{op :op :as instr} & r] :instrs}]
+                  (when instr
+                    (let [ops {:move 123}]
+                      {:state ((ops op) s instr)
+                       :instrs r}))))
   )
