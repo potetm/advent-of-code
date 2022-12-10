@@ -1,6 +1,6 @@
 (ns advent-2022.day-9
   (:require
-    [clojure.math :as math]
+    [advent.util :as util]
     [clojure.string :as str]))
 
 
@@ -17,16 +17,14 @@
           cmds))
 
 
-(defn dist [[x1 y1] [x2 y2]]
-  (math/sqrt (+ (math/pow (abs (- x2 x1))
-                          2)
-                (math/pow (abs (- y2 y1))
-                          2))))
+(defn touching? [a b]
+  (< (util/dist a b)
+     2))
 
 
 (defn mv1 [a b]
-  (let [diff (- b a)]
-    (+ a (/ diff (abs diff)))))
+  (let [∆ (- b a)]
+    (+ a (/ ∆ (abs ∆)))))
 
 
 (defn step [[h & r] dir]
@@ -43,7 +41,7 @@
               (let [[x2 y2 :as b] (peek rope)]
                 (conj rope
                       (cond
-                        (< (dist a b) 2) a
+                        (touching? a b) a
                         (= x1 x2) [x1 (mv1 y1 y2)]
                         (= y1 y2) [(mv1 x1 x2) y1]
                         :else [(mv1 x1 x2)

@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [min max])
   (:require
     [clojure.core :as cc]
+    [clojure.math :as math]
     [clojure.string :as str]))
 
 (defn min [coll]
@@ -189,3 +190,10 @@
    (for [x (range x1 length)
          y (range y1 width)]
      [x y])))
+
+
+(defn dist [[x1 y1] [x2 y2]]
+  (math/sqrt (+ (math/pow (abs (- x2 x1))
+                          2)
+                (math/pow (abs (- y2 y1))
+                          2))))
