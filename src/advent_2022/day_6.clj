@@ -2,8 +2,7 @@
 
 (defn solve [l s]
   (first (keep-indexed (fn [idx part]
-                         (when (= part
-                                  (distinct part))
+                         (when (apply distinct? part)
                            [(+ l idx) part]))
                        (partition-all l 1 s))))
 

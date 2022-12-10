@@ -45,15 +45,28 @@
               coll)))
 
 
-(defn product [coll]
-  (reduce * 1 coll))
+(defn product
+  ([coll]
+   (reduce * 1 coll))
+  ([xf coll]
+   (transduce xf
+              *
+              1
+              coll)))
 
 
-(defn transpose [coll]
-  (when (seq coll)
+(defn transpose [matrix]
+  (when (seq matrix)
     (apply mapv
            vector
-           coll)))
+           matrix)))
+
+
+(defn column [matrix col]
+  (when (seq matrix)
+    (into []
+          (map #(get % col))
+          matrix)))
 
 
 (defn trim-to-nil [s]
@@ -145,3 +158,34 @@
                            (recur (rest s) (assoc seen v :seen))))))
                    xs seen)))]
      (step coll {}))))
+
+
+;; from https://github.com/weavejester/medley/blob/master/src/medley/core.cljc
+(defn take-upto
+  "Returns a lazy sequence of successive items from coll up to and including
+  the first item for which `(pred item)` returns true."
+  ([pred]
+   (fn [rf]
+     (fn
+       ([] (rf))
+       ([result] (rf result))
+       ([result x]
+        (let [result (rf result x)]
+          (if (pred x)
+            (ensure-reduced result)
+            result))))))
+  ([pred coll]
+   (lazy-seq
+     (when-let [s (seq coll)]
+       (let [x (first s)]
+         (cons x (if-not (pred x) (take-upto pred (rest s)))))))))
+
+
+(defn rect-points
+  ([b]
+   (rect-points [0 0]
+                [(count b) (count (first b))]))
+  ([[x1 y1] [length width]]
+   (for [x (range x1 length)
+         y (range y1 width)]
+     [x y])))
