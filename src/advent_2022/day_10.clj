@@ -45,16 +45,14 @@
                          instrs))))
 
 
-(defn power [{c :cycle
-              x :x}]
-  (* c x))
-
 (defn part-1 [in]
   (let [states (run init in)
         cycles (into #{}
                      (range 20 221 40))]
     (util/sum (comp (filter (comp cycles :cycle))
-                    (map power))
+                    (map (fn [{c :cycle
+                               x :x}]
+                           (* c x))))
               states)))
 
 
