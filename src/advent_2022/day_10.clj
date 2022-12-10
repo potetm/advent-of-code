@@ -66,8 +66,8 @@
                                       (if (<= (dec x)
                                               idx
                                               (inc x))
-                                        "#"
-                                        "."))
+                                        "░"
+                                        " "))
                                     row)))))
 
 (comment
