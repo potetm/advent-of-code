@@ -56,6 +56,16 @@
               coll)))
 
 
+(defn product'
+  ([coll]
+   (reduce *' 1 coll))
+  ([xf coll]
+   (transduce xf
+              *'
+              1
+              coll)))
+
+
 (defn transpose [matrix]
   (when (seq matrix)
     (apply mapv
@@ -63,7 +73,7 @@
            matrix)))
 
 
-(defn column [matrix col]
+(defn row [matrix col]
   (when (seq matrix)
     (into []
           (map #(get % col))

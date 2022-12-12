@@ -18,7 +18,7 @@
 
 (defn visible? [grid [x y :as pnt]]
   (let [col (get grid x)
-        row (util/column grid y)
+        row (util/row grid y)
         v (get-in grid pnt)]
     (boolean (some (fn [l]
                      (every? #(< % v) l))
@@ -33,7 +33,7 @@
 
 (defn score [grid [x y :as pnt]]
   (let [col (get grid x)
-        row (util/column grid y)
+        row (util/row grid y)
         v (get-in grid pnt)]
     (util/product (map (fn [l]
                          (count (util/take-upto #(<= v %)
@@ -57,8 +57,8 @@
   (util/take-upto #(<= 5 %)
                   [1 2])
 
-  (util/column (parse t)
-               3)
+  (util/row (parse t)
+            3)
   (score (parse t)
          [2 1])
 

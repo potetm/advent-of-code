@@ -6,6 +6,6 @@ cd "$(dirname "$0")"/..
 
 clj \
   -A:dev \
-  -J-Xmx5g \
-  -J-Xms5g \
+  -J-Xmx10g \
+  -J-Xms10g \
   -m nrepl.cmdline
