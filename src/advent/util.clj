@@ -5,10 +5,17 @@
     [clojure.math :as math]
     [clojure.string :as str]))
 
-(defn min [coll]
-  (when (seq coll)
-    (reduce cc/min
-            coll)))
+(defn min
+  ([coll]
+   (when (seq coll)
+     (reduce cc/min
+             coll)))
+  ([xf coll]
+   (when (seq coll)
+     (transduce xf
+                (completing cc/min)
+                Double/POSITIVE_INFINITY
+                coll))))
 
 
 (defn max
@@ -197,9 +204,15 @@
    (rect-points [0 0]
                 [(count b) (count (first b))]))
   ([[x1 y1] [length width]]
-   (for [x (range x1 length)
-         y (range y1 width)]
+   (for [y (range y1 width)
+         x (range x1 length)]
      [x y])))
+
+
+(defn rect-vals [b]
+  (into []
+        (map #(get-in b %))
+        (rect-points b)))
 
 
 (defn dist [[x1 y1] [x2 y2]]
@@ -207,3 +220,42 @@
                           2)
                 (math/pow (abs (- y2 y1))
                           2))))
+
+
+(def neighbors*
+  (for [x (range -1 2)
+        y (range -1 2)
+        :when (not (and (zero? x)
+                        (zero? y)))]
+    [x y]))
+
+
+(defn neighbors [pnt]
+  (into []
+        (map (fn [mv]
+               (mapv + mv pnt)))
+        neighbors*))
+
+
+(defn taxi-neighbors [board pnt]
+  (let [w (count board)
+        h (count (peek board))]
+    (into []
+          (comp (map (fn [mv]
+                       (mapv + pnt mv)))
+                (remove (fn [mv]
+                          (let [x (first mv)
+                                y (peek mv)]
+                            (or (neg? x)
+                                (neg? y)
+                                (<= w x)
+                                (<= h y))))))
+          [[1 0]
+           [-1 0]
+           [0 1]
+           [0 -1]])))
+
+
+(defn taxicab-distance [[x1 y1] [x2 y2]]
+  (+ (Math/abs ^long (- x1 x2))
+     (Math/abs ^long (- y1 y2))))
