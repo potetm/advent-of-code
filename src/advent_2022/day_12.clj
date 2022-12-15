@@ -104,7 +104,7 @@
 
 
 
-  (part-1 (parse in))
-  (part-2 (parse in))
+  (time (part-1 (parse in)))
+  (time (part-2 (parse in)))
 
   )

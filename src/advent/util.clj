@@ -209,6 +209,20 @@
      [x y])))
 
 
+(defn taxi-line-points
+  ([a b]
+   (taxi-line-points [a b]))
+  ([pnts]
+   (let [[[x1 y1] [x2 y2]] (sort pnts)]
+     (map vector
+          (if (= x1 x2)
+            (repeat x1)
+            (range x1 (inc x2)))
+          (if (= y1 y2)
+            (repeat y1)
+            (range y1 (inc y2)))))))
+
+
 (defn rect-vals [b]
   (into []
         (map #(get-in b %))
@@ -259,3 +273,9 @@
 (defn taxicab-distance [[x1 y1] [x2 y2]]
   (+ (Math/abs ^long (- x1 x2))
      (Math/abs ^long (- y1 y2))))
+
+
+(defn board [xmx ymx init]
+  (vec (repeat (inc xmx)
+               (vec (repeat (inc ymx)
+                            init)))))
