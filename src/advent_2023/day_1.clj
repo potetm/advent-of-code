@@ -51,6 +51,8 @@
 
 
   (def t1 "two1nine\neightwothree\nabcone2threexyz\nxtwone3four\n4nineeightseven2\nzoneight234\n7pqrstsixteen")
+  (re-seq #"(?=(\d|one|two|three|four|five|six|seven|eight|nine))"
+           "nxtwone3four")
   (into []
 
 

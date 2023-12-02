@@ -279,3 +279,7 @@
   (vec (repeat (inc xmx)
                (vec (repeat (inc ymx)
                             init)))))
+
+
+(defn map-diff [m1 m2]
+  (merge-with + m1 (update-vals m2 -)))
