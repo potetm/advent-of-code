@@ -5,7 +5,7 @@ set -euo pipefail
 cd "$(dirname "$0")"/..
 
 clj \
-  -A:dev \
   -J-Xmx10g \
   -J-Xms10g \
+  -M:dev \
   -m nrepl.cmdline
