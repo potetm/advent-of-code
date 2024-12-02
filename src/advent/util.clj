@@ -53,6 +53,16 @@
               coll)))
 
 
+(defn sum'
+  ([coll]
+   (reduce +' 0 coll))
+  ([xf coll]
+   (transduce xf
+              +'
+              0
+              coll)))
+
+
 (defn product
   ([coll]
    (reduce * 1 coll))
