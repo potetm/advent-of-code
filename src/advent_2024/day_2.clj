@@ -1,5 +1,6 @@
 (ns advent-2024.day-2
-  (:require [clojure.string :as str]))
+  (:require
+    [clojure.string :as str]))
 
 (defn parse [s]
   (map (fn [l]

@@ -30,7 +30,7 @@
 (comment
   (def t "3   4\n4   3\n2   5\n1   3\n3   9\n3   3")
 
-  (part-1 (parse t))
+  (time (part-1 (parse t)))
 
   (part-2 (parse t))
 
