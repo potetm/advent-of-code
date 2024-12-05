@@ -254,11 +254,36 @@
     [x y]))
 
 
-(defn neighbors [pnt]
-  (into []
-        (map (fn [mv]
-               (mapv + mv pnt)))
-        neighbors*))
+(def diag-neighbors*
+  [[-1 -1]
+   [-1 1]
+   [1 -1]
+   [1 1]])
+
+
+(defn move [pnt dir]
+  (mapv + pnt dir))
+
+
+(defn neighbors
+  ([pnt]
+   (into []
+         (map (fn [mv]
+                (mapv + mv pnt)))
+         neighbors*))
+  ;; ASSUMES the board is not transposed to allow x,y addresses
+  ([board pnt]
+   (into []
+         (comp (map (fn [mv]
+                      (mapv + mv pnt)))
+               (remove (fn [[x y]]
+                         (or (neg? x)
+                             (neg? y)
+                             (< (dec (count board)) x)
+                             (< (dec (count (first board))) y)))))
+         neighbors*)))
+
+
 
 
 (defn taxi-neighbors [board pnt]
