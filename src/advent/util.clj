@@ -246,6 +246,11 @@
                           2))))
 
 
+(defn slope [[x1 y1] [x2 y2]]
+  (/ (- y2 y1)
+     (- x2 x1)))
+
+
 (def neighbors*
   (for [x (range -1 2)
         y (range -1 2)
@@ -318,3 +323,13 @@
 
 (defn map-diff [m1 m2]
   (merge-with + m1 (update-vals m2 -)))
+
+
+;; * means inverted indices
+(defn on-board?* [b [x y]]
+  (and (< -1
+          y
+          (count b))
+       (< -1
+          x
+          (count (first b)))))
