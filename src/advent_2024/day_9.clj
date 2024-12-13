@@ -84,7 +84,7 @@
               (let [v (get lo idx)
                     idx' (dec idx)]
                 (cond
-                  (neg? idx) nil
+                  (neg? idx) ret
                   (and (some? prev)
                        (not= prev (get lo idx)))
                   ret
@@ -94,13 +94,14 @@
                                  (some? v) (conj idx))))))
         v (get lo (peek eis))
         [c idx] (when (peek eis)
-                  (some (fn [[c locs]]
-                          (when (and (<= (count eis)
-                                         c)
-                                     (< (first locs)
-                                        (peek eis)))
-                            [c (first locs)]))
-                        f->l))
+                  (first (sort-by second
+                                  (keep (fn [[c locs]]
+                                          (when (and (<= (count eis) c)
+                                                     (seq locs)
+                                                     (< (first locs)
+                                                        (peek eis)))
+                                            [c (first locs)]))
+                                        f->l))))
         c' (when c
              (- c (count eis)))
         lo' (if (or (not c')
@@ -113,17 +114,7 @@
                 (reduce (fn [acc idx]
                           (assoc acc idx v))
                         lo'
-                        (range idx (+ idx (count eis))))))
-        len (when (peek eis)
-              (loop [i (peek eis)
-                     c 0]
-                (let [v' (get lo' i)]
-                  (if (or (and (not= v v')
-                               (some? v'))
-                          (= (count lo) i))
-                    c
-                    (recur (inc i)
-                           (inc c))))))]
+                        (range idx (+ idx (count eis))))))]
     (when (seq eis)
       (assoc s
         :eis eis
@@ -135,10 +126,6 @@
                      (cond-> f->l
                        :always (update c (fn [vs]
                                            (disj vs idx)))
-                       :always (update len (fn [vs]
-                                             (conj (or vs
-                                                       (sorted-set))
-                                                   (peek eis))))
                        (pos? c') (update c' (fn [vs]
                                               (conj (or vs
                                                         (sorted-set))
@@ -166,7 +153,12 @@
 
   (count (:layout (parse t)))
   (step* (step* (step* (parse t))))
-  (part-2 (parse in))
+  (part-2 (parse t))
+
+
+  (parse in)
+
+  ;; 6324997730806
 
   ;; 00...111...2...333.44.5555.6666.777.888899
   ;; 0099.111...2...333.44.5555.6666.777.8888..
@@ -176,7 +168,9 @@
 
 
   ;; 8581730812167 -- too high
+  ;; 8581730812166 -- too high
   ;; 6324997730806 -- too low
+  ;; 6320367473573 -- ????
   (map (comp println :layout)
        (map (fn [{lo :layout :as s}]
               (assoc s
@@ -184,9 +178,6 @@
                                         lo))))
             (take-while some? (iterate step*
                                        (parse t)))))
-
-  (take 2 (iterate step*
-                   (parse t)))
 
   (let [v nil
         ret []]
