@@ -124,7 +124,8 @@
                           (assoc acc idx v))
                         lo'
                         (range idx (+ idx (count eis))))))]
-    (when (seq eis)
+    (if (zero? v)
+      nil
       (assoc s
         :eis eis
         :seen (conj seen v)
@@ -138,7 +139,7 @@
                        (pos? c') (update c' (fn [vs]
                                               (conj (or vs
                                                         (sorted-set))
-                                                    (+ idx (inc c')))))))
+                                                    (+ idx (count eis)))))))
         :layout lo'))))
 
 
@@ -195,7 +196,7 @@
   (conj (conj [] 1)
         2)
 
-  (p2 (parse in))
+  (part-2 (parse in))
   (count "00992111777.44.333....5555.6666.....8888..")
 
   (rseq (sorted-map :a 1 :b 2))
